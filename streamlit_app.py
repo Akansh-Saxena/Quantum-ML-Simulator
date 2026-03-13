@@ -57,28 +57,38 @@ def fetch_live_weather():
     Geolocates the user's IP and fetches real-time weather from OpenWeatherMap.
     Gracefully falls back to arbitrary/simulated values if API key is missing or geocoder fails.
     """
+    city, lat, lng = "Allahabad", 25.4358, 81.8463
     try:
         g = geocoder.ip('me')
-        city = g.city if g.city else "Allahabad"
-        lat, lng = g.latlng if g.latlng else (25.4358, 81.8463)
-        
+        if g.ok and g.latlng:
+            city = g.city if g.city else city
+            lat, lng = g.latlng
+    except Exception:
+        pass # Fallback to default if geolocating fails on server
+
+    try:
         # Pull API key from Streamlit Secrets (handled securely)
         api_key = st.secrets.get("OPENWEATHER_API_KEY", None)
         
-        if api_key:
+        if api_key and "PLEASE_INSERT" not in api_key:
             url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={api_key}&units=metric"
             res = requests.get(url).json()
-            temp = res['main']['temp']
-            humidity = res['main']['humidity']
-            pressure = res['main']['pressure']
-            weather_desc = res['weather'][0]['description']
+            
+            if str(res.get("cod")) == "200":
+                temp = res['main']['temp']
+                humidity = res['main']['humidity']
+                pressure = res['main']['pressure']
+                weather_desc = res['weather'][0]['description'].title()
+                return city, temp, humidity, pressure, weather_desc, True
+            else:
+                error_msg = res.get("message", "Invalid API Key")
+                return city, 32.5, 65, 1012, f"API Error (Keys take 2 hrs to activate)", False
         else:
             # Fallback mock data if no key is provided
-            temp, humidity, pressure, weather_desc = 32.5, 65, 1012, "Clear/Mocked (Requires API Key)"
+            return city, 32.5, 65, 1012, "Clear/Mocked (Requires API Key)", False
             
-        return city, temp, humidity, pressure, weather_desc, True
     except Exception as e:
-        return "Unknown", 25.0, 50, 1013, "Data Unavailable", False
+        return city, 25.0, 50, 1013, f"Data Unavailable: {type(e).__name__}", False
 
 @st.cache_resource
 def load_cv_model():
