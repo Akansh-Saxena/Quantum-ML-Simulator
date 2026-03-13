@@ -1,0 +1,335 @@
+import json
+import os
+
+cells = [
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# Antigravity Material Behavior Simulation\n",
+            "## Capstone Project: Machine Learning Prediction of Gravitational Disruption\n",
+            "*Author: Senior AI Architect & Quantum Physics Researcher*\n\n",
+            "This notebook simulates and predicts localized gravitational disruption based on exotic matter properties and high-energy electromagnetic fields."
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 1: Install Required Libraries\n",
+            "We upgrade from basic libraries to advanced, futuristic ones like TensorFlow/Keras, XGBoost, and Plotly 3D."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "!pip install numpy pandas scikit-learn tensorflow xgboost plotly\n\n",
+            "import numpy as np\n",
+            "import pandas as pd\n",
+            "import tensorflow as tf\n",
+            "from tensorflow import keras\n",
+            "from tensorflow.keras import layers\n",
+            "import xgboost as xgb\n",
+            "from sklearn.model_selection import train_test_split\n",
+            "from sklearn.preprocessing import StandardScaler\n",
+            "from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error\n",
+            "import plotly.graph_objects as go\n",
+            "import warnings\n",
+            "warnings.filterwarnings('ignore')\n\n",
+            "print(\"TensorFlow Version:\", tf.__version__)\n",
+            "print(\"XGBoost Version:\", xgb.__version__)"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 2: Load the Dataset\n",
+            "Since actual subatomic antigravity data is restricted (or theoretical), we simulate a high-fidelity dataset of 10,000 quantum experiments.\n\n",
+            "**Physics Context:**\n",
+            "- **Electromagnetic Field Strength (Tesla)**: High-intensity magnetic fields used to stabilize the exotic matter.\n",
+            "- **Exotic Matter Density (kg/m^3)**: The concentration of negative-mass matter or metamaterials.\n",
+            "- **Subatomic Resonance (THz)**: The frequency at which the material's atomic lattice vibrates.\n",
+            "- **Energy Input (Terawatts)**: The raw power injected into the containment field.\n\n",
+            "**Target Variable**:\n",
+            "- **Gravitational Disruption Index (GDI)**: A dimensionless scalar where 0 represents normal Earth gravity (1g) and negative values represent localized gravitational anomalies.\n\n",
+            "We use a non-linear physics-based formula combined with quantum noise to generate the GDI:\n",
+            "$$GDI = 0.05 \\cdot (\\text{EM\\_Field} \\cdot \\ln(\\text{Density} + 1)) + 0.001 \\cdot (\\text{Resonance}^2 \\cdot \\text{Energy}) + \\text{Noise}$$"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 2: Generate Synthetic Dataset\n",
+            "np.random.seed(42)\n",
+            "num_samples = 10000\n\n",
+            "# Features\n",
+            "em_field_strength = np.random.uniform(50, 500, num_samples) # in Tesla\n",
+            "exotic_matter_density = np.random.uniform(0.01, 10.0, num_samples) # kg/m^3\n",
+            "subatomic_resonance = np.random.uniform(1, 100, num_samples) # THz\n",
+            "energy_input = np.random.uniform(0.5, 50.0, num_samples) # Terawatts\n\n",
+            "# Theoretical Non-linear Physics Equation for GDI\n",
+            "quantum_noise = np.random.normal(0, 2.5, num_samples)\n",
+            "gdi = 0.05 * (em_field_strength * np.log(exotic_matter_density + 1)) + \\\n",
+            "      0.001 * (np.power(subatomic_resonance, 2) * energy_input) + \\\n",
+            "      quantum_noise\n\n",
+            "df = pd.DataFrame({\n",
+            "    'EM_Field_Strength_Tesla': em_field_strength,\n",
+            "    'Exotic_Matter_Density': exotic_matter_density,\n",
+            "    'Subatomic_Resonance_THz': subatomic_resonance,\n",
+            "    'Energy_Input_Terawatts': energy_input,\n",
+            "    'Gravitational_Disruption_Index': gdi\n",
+            "})\n\n",
+            "print(\"Dataset generated successfully. Shape:\", df.shape)\n",
+            "display(df.head())"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 3: Check Missing Values\n",
+            "Sensor anomalies and temporary containment breaches often cause missing readouts in quantum experiments. We simulate this by introducing random `NaN` values into our dataset."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 3: Introduce simulated data corruption\n",
+            "np.random.seed(42)\n\n",
+            "# Corrupt roughly 5% of the features randomly\n",
+            "for col in df.columns[:-1]: # Don't corrupt the target variable (GDI)\n",
+            "    mask = np.random.rand(num_samples) < 0.05\n",
+            "    df.loc[mask, col] = np.nan\n\n",
+            "print(\"Missing values after simulating sensor anomalies:\")\n",
+            "print(df.isnull().sum())"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 4: Data Preprocessing\n",
+            "We must handle the missing values so our neural network doesn't collapse. We will impute the missing values with the median of each respective column to maintain distribution integrity.\n",
+            "After imputation, we apply `StandardScaler` to ensure all features have a mean of 0 and a variance of 1. This prevents high-magnitude variables (like Energy Input) from dominating the gradients during Neural Network training."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 4: Handle missing values via Impute with median\n",
+            "df_clean = df.fillna(df.median())\n\n",
+            "print(\"Missing values after imputation:\")\n",
+            "print(df_clean.isnull().sum())\n\n",
+            "# Separate features and target\n",
+            "X = df_clean.drop('Gravitational_Disruption_Index', axis=1)\n",
+            "y = df_clean['Gravitational_Disruption_Index']\n\n",
+            "# Advanced feature scaling\n",
+            "scaler = StandardScaler()\n",
+            "X_scaled = scaler.fit_transform(X)\n\n",
+            "# Convert back to DataFrame for better visibility\n",
+            "X_scaled_df = pd.DataFrame(X_scaled, columns=X.columns)\n",
+            "display(X_scaled_df.head())"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 5: Split the Data\n",
+            "We split the data into 80% training and 20% testing sets. The training set is used to optimize the model weights, while the testing set verifies that our model generalizes well to unseen quantum states."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 5: 80/20 train-test split\n",
+            "X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)\n\n",
+            "print(f\"Training data shape: {X_train.shape}\")\n",
+            "print(f\"Testing data shape: {X_test.shape}\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 6: Build and Train the Model\n",
+            "We will implement a futuristic **Multi-Layer Perceptron (MLP) Deep Neural Network** to capture the highly non-linear dynamics of antigravity variables.\n",
+            "The network architecture consists of:\n",
+            "- An input layer mapping the 4 quantum features.\n",
+            "- Three dense hidden layers with ReLU activation functions, decreasing in complexity to extract hierarchical non-linear patterns.\n",
+            "- A final output layer with a linear activation function for regression (predicting the exact GDI value).\n",
+            "- Adam optimizer and Mean Squared Error (MSE) loss function."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 6: Build the futuristic MLP Neural Network\n",
+            "model = keras.Sequential([\n",
+            "    layers.Dense(128, activation='relu', input_shape=[X_train.shape[1]]),\n",
+            "    layers.Dense(64, activation='relu'),\n",
+            "    layers.Dense(32, activation='relu'),\n",
+            "    layers.Dense(1) # Linear output for regression\n",
+            "])\n\n",
+            "# Compile the model\n",
+            "optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)\n",
+            "model.compile(loss='mse', optimizer=optimizer, metrics=['mae'])\n\n",
+            "model.summary()\n\n",
+            "# Train the model\n",
+            "print(\"\\n--- Initiating Neural Network Training Sequence ---\")\n",
+            "history = model.fit(\n",
+            "    X_train, y_train,\n",
+            "    epochs=50,\n",
+            "    validation_split=0.2,\n",
+            "    batch_size=32,\n",
+            "    verbose=1\n",
+            ")\n",
+            "print(\"--- Training Sequence Complete ---\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 7: Evaluate the Model\n",
+            "We will evaluate the trained MLP network using the untouched test dataset.\n",
+            "Key metrics:\n",
+            "- **Mean Squared Error (MSE)**: The average squared difference between estimated and actual GDI.\n",
+            "- **Root Mean Squared Error (RMSE)**: Easier to interpret as it's in the same unit as the GDI.\n",
+            "- **Mean Absolute Error (MAE)**: The average absolute error.\n",
+            "- **R-Squared (R²)**: The proportion of the variance in GDI predictable from the features. A value close to 1.0 indicates near-perfect prediction capabilities."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 7: Model Evaluation\n",
+            "y_pred = model.predict(X_test).flatten()\n\n",
+            "mse = mean_squared_error(y_test, y_pred)\n",
+            "rmse = np.sqrt(mse)\n",
+            "mae = mean_absolute_error(y_test, y_pred)\n",
+            "r2 = r2_score(y_test, y_pred)\n\n",
+            "print(f\"\\n--- Quantum Simulation Model Diagnostics ---\")\n",
+            "print(f\"Mean Squared Error (MSE):       {mse:.4f}\")\n",
+            "print(f\"Root Mean Squared Error (RMSE): {rmse:.4f}\")\n",
+            "print(f\"Mean Absolute Error (MAE):      {mae:.4f}\")\n",
+            "print(f\"R-Squared (R2):                 {r2:.4f}\")\n",
+            "print(\"--------------------------------------------\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "### Step 8: Visualize the Results\n",
+            "To properly demonstrate the highly complex, non-linear relationship between our input parameters, we generate a futuristic, interactive 3D surface plot.\n",
+            "This map charts how **Electromagnetic Field Strength** and **Energy Input** interact to modulate the **Gravitational Disruption Index**, holding other variables at their mean values.\n\n",
+            "*Note: You can rotate, zoom, and explore this 3D map to find the \"sweet spot\" for maximum antigravity generation.*"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Step 8: Interactive 3D Surface Visualization using Plotly\n",
+            "# Create a grid for EM Field and Energy Input\n",
+            "em_field_range = np.linspace(X['EM_Field_Strength_Tesla'].min(), X['EM_Field_Strength_Tesla'].max(), 50)\n",
+            "energy_range = np.linspace(X['Energy_Input_Terawatts'].min(), X['Energy_Input_Terawatts'].max(), 50)\n\n",
+            "em_grid, energy_grid = np.meshgrid(em_field_range, energy_range)\n\n",
+            "# Hold Density and Resonance at their median values for the simulation surface\n",
+            "density_median = df_clean['Exotic_Matter_Density'].median()\n",
+            "resonance_median = df_clean['Subatomic_Resonance_THz'].median()\n\n",
+            "# Flatten grids to pass into the model\n",
+            "em_flat = em_grid.flatten()\n",
+            "energy_flat = energy_grid.flatten()\n",
+            "density_flat = np.full_like(em_flat, density_median)\n",
+            "resonance_flat = np.full_like(em_flat, resonance_median)\n\n",
+            "# Create an artificial test DataFrame with the exact column order\n",
+            "sim_df = pd.DataFrame({\n",
+            "    'EM_Field_Strength_Tesla': em_flat,\n",
+            "    'Exotic_Matter_Density': density_flat,\n",
+            "    'Subatomic_Resonance_THz': resonance_flat,\n",
+            "    'Energy_Input_Terawatts': energy_flat\n",
+            "})\n\n",
+            "# Scale features based on the previously fit scaler\n",
+            "sim_scaled = scaler.transform(sim_df)\n\n",
+            "# Predict GDI using the Neural Network\n",
+            "gdi_pred = model.predict(sim_scaled).flatten()\n",
+            "gdi_surface = gdi_pred.reshape(em_grid.shape)\n\n",
+            "# Create futuristic 3D Plot\n",
+            "fig = go.Figure(data=[go.Surface(\n",
+            "    z=gdi_surface, \n",
+            "    x=em_grid, \n",
+            "    y=energy_grid, \n",
+            "    colorscale='Plasma',\n",
+            "    lighting=dict(ambient=0.8, diffuse=0.8, roughness=0.1, specular=1.0, fresnel=0.8)\n",
+            ")])\n\n",
+            "fig.update_layout(\n",
+            "    title='Quantum Simulation: Gravitational Disruption Manifold',\n",
+            "    scene=dict(\n",
+            "        xaxis_title='EM Field Strength (Tesla)',\n",
+            "        yaxis_title='Energy Input (TW)',\n",
+            "        zaxis_title='Predicted GDI',\n",
+            "        xaxis=dict(gridcolor='cyan', zerolinecolor='cyan', backgroundcolor='black'),\n",
+            "        yaxis=dict(gridcolor='magenta', zerolinecolor='magenta', backgroundcolor='black'),\n",
+            "        zaxis=dict(gridcolor='yellow', zerolinecolor='yellow', backgroundcolor='black')\n",
+            "    ),\n",
+            "    paper_bgcolor='black',\n",
+            "    font=dict(color='white'),\n",
+            "    margin=dict(l=0, r=0, b=0, t=50)\n",
+            ")\n\n",
+            "fig.show()"
+        ]
+    }
+]
+
+notebook = {
+    "cells": cells,
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3"
+        },
+        "language_info": {
+            "codemirror_mode": {"name": "ipython", "version": 3},
+            "file_extension": ".py",
+            "mimetype": "text/x-python",
+            "name": "python",
+            "nbconvert_exporter": "python",
+            "pygments_lexer": "ipython3",
+            "version": "3.8.0"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 4
+}
+
+with open(r'd:\WEATHER_FORECAST\Antigravity_Simulation.ipynb', 'w', encoding='utf-8') as f:
+    json.dump(notebook, f, indent=2)
+
+print("Notebook generated successfully at d:\\WEATHER_FORECAST\\Antigravity_Simulation.ipynb")
