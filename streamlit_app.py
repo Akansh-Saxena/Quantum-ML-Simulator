@@ -112,6 +112,30 @@ def fetch_live_weather(lat, lng, city_name):
                 weather_desc = f"API Error (Wait 2 hrs if new key)"
         except Exception as e:
             weather_desc = f"Data Error: {type(e).__name__}"
+    else:
+        # Fallback to Open-Meteo (No API Key Required)
+        try:
+            url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,weather_code"
+            res = requests.get(url).json()
+            if "current" in res:
+                temp = res["current"]["temperature_2m"]
+                humidity = res["current"]["relative_humidity_2m"]
+                pressure = res["current"]["surface_pressure"]
+                
+                # WMO Weather Code Mapping
+                wmo_code = res["current"]["weather_code"]
+                wx_map = {0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 45: "Fog", 48: "Depositing Rime Fog", 
+                          51: "Light Drizzle", 53: "Moderate Drizzle", 55: "Dense Drizzle", 61: "Slight Rain", 63: "Moderate Rain", 
+                          65: "Heavy Rain", 71: "Slight Snow", 73: "Moderate Snow", 75: "Heavy Snow", 95: "Thunderstorm"}
+                weather_desc = wx_map.get(wmo_code, "Mixed Conditions") + " (Open-Meteo Free API)"
+                is_live = True
+                
+                if temp > 40: alerts.append("🔴 NWS EXTREME HEAT ADVISORY: Temperatures exceed safe thresholds.")
+                if temp < 0: alerts.append("❄️ NWS FREEZE WARNING: Sub-zero conditions detected.")
+                if pressure < 990: alerts.append("🌪️ NWS SEVERE STORM WATCH: Deep low-pressure system detected.")
+                if humidity > 95: alerts.append("🌫️ NWS DENSE FOG/FLOOD WATCH: Extreme moisture levels.")
+        except Exception as e:
+            pass
 
     return city_name, temp, humidity, pressure, weather_desc, is_live, alerts, local_time
 
