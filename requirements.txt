@@ -6,3 +6,7 @@ tensorflow-cpu
 shap
 scikit-learn
 matplotlib
+opencv-python-headless
+geocoder
+requests
+Pillow

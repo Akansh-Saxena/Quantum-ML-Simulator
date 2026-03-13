@@ -1,45 +1,52 @@
-# 🌌 Advanced Machine Learning Physics Simulation
+# 🌍 Multimodal Weather & Physics Intelligence Hub
 
-**Author:** Akansh Saxena  
+**Lead AI Engineer:** Akansh Saxena  
 **Institution:** Final-Year B.Tech CSE, J.K. Institute of Applied Physics & Technology, Allahabad University  
-**Project:** Capstone Portfolio Project
+**Project:** Multimodal Capstone Portfolio Project
 
 ## 📖 Overview
-This repository contains a production-grade, interactive machine learning dashboard that simulates complex electromagnetic and quantum physics. It models localized gravitational disruption (Antigravity behavior) using a custom synthetic data generation engine and deep learning. 
+This repository contains a production-grade, state-of-the-art **Multimodal AI Dashboard** that simultaneously models complex physics phenomena and analyzes real-world geospatial/visual data. Evolving from a pure physics simulation, this project now seamlessly marries:
+- Real-Time Geospatial Environment Mapping (Live IP geolocation & Weather API Integration).
+- Computer Vision processing (via integrated Webcam capturing & File uploading inferenced on lightweight Neural Networks).
+- Deep Sequence Learning via an LSTM architecture for complex Target Disruption extraction.
 
-The application utilizes a **Long Short-Term Memory (LSTM)** neural network built with TensorFlow/Keras to perform sequence prediction on 100-timestep engine burns. Additionally, it implements **Explainable AI (XAI)** using SHAP to interpret the theoretical physics phenomena driving the neural network's predictions.
-
-## 🛠️ Tech Stack
+## 🛠️ Cutting-Edge Tech Stack
 - **Frontend / Data App:** Streamlit
-- **Deep Learning / AI:** TensorFlow, Keras
-- **Explainable AI (XAI):** SHAP (SHapley Additive exPlanations), Scikit-Learn (Surrogate modeling for real-time inference)
-- **Data Manipulation:** Pandas, NumPy
-- **Interactive Visualization:** Plotly (3D Surfaces, Time-Series Sequence rendering), Matplotlib
+- **Multimodal AI / Deep Learning:** TensorFlow, Keras (MobileNetV2), OpenCV 
+- **Explainable AI (XAI):** SHAP, Scikit-Learn
+- **Geospatial & Networking:** Geocoder, Requests (OpenWeatherMap RESTful API)
+- **Data & Vizards:** Pandas, NumPy, Plotly (3D Surfaces), Matplotlib
 
-## 🧠 Machine Learning Architecture
-1. **Synthetic Data Engine:** Generates highly complex, non-linear time-series physics data with 4 multidimensional parameters: Fluctuating EM Field Strength, Exotic Matter Density, Subatomic Resonance, and Energy Input.
-2. **LSTM Backend:** A Keras Sequential LSTM Neural Network trained heavily to recognize sequential quantum fluctuations and predict the final localized "Gravitational Disruption Index" target.
-3. **Surrogate XAI Engine:** Employs a Random Forest Regressor over temporal averages to compute SHAP values instantly and explain the underlying dynamics in real-time on the Streamlit UI.
+## 🧠 Multimodal Architecture & Pipeline
+1. **Live Weather Mode & Sensor Integration**: Automatically captures the environment's telemetry via geolocation or webcam feed to establish the base engine parameters (simulating open-world influences).
+2. **Visual Intelligence Engine**: Features an active Webcam tab capable of ingesting localized environmental input and driving rapid inference predictions through pre-trained deep convolutional neural networks.
+3. **Sequence Target Engine**: Employs an advanced Keras LSTM Network tailored to process synthetic 100-step subatomic time-series datasets combined with atmospheric telemetry mapping.
+4. **Surrogate XAI Layer**: Instantly breaks down the multidimensional influence mapped onto 3D Topology matrices, verifying adherence to simulated physical constraints.
 
 ## 🚀 How to Run Locally
 
 ### Prerequisites
-Ensure that Python 3.9+ is installed on your machine.
+Make sure Python 3.9+ is installed and accessible via PATH.
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/your-username/antigravity-simulation.git
-   cd antigravity-simulation
+   git clone https://github.com/Akansh-Saxena/Quantum-ML-Simulator.git
+   cd Quantum-ML-Simulator
    ```
 
 2. **Install Dependencies:**
-   It is recommended to use a virtual environment. Install the packages using the provided robust requirements file:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Launch the Streamlit App:**
+3. **Provide API Secrets:**
+   Create a directory `.streamlit` and add `secrets.toml`:
+   ```toml
+   OPENWEATHER_API_KEY = "your_actual_api_key_here"
+   ```
+
+4. **Launch the Multimodal App:**
    ```bash
    streamlit run streamlit_app.py
    ```
-   *The stunning dark-mode application will automatically open in your default browser at `http://localhost:8501`.*
+   *The system will launch locally at `http://localhost:8501`*
