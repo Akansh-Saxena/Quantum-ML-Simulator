@@ -1,0 +1,10 @@
+﻿f2b41d0 | feat: Add `app.py` and update `WEATHER_Simulation.ipynb` with executed cells, package installation outputs, and library version checks. | Akansh Saxena | saxenaakansh29@gmail.com
+7c304c4 | Force Open-Meteo usage to bypass OpenWeatherMap API key activation delay | AI Deployer | deploy@neurosense.ai
+b817af7 | Use open-meteo fallback to instantly fix API errors without needing API keys | AI Deployer | deploy@neurosense.ai
+ab24569 | Fix Streamlit Cloud crash by unpinning requirements | AI Deployer | deploy@neurosense.ai
+e08bc47 | Integrated Global Search and NWS Intelligence | AI Deployer | deploy@neurosense.ai
+575fd53 | Enhance API error handling for fetch_live_weather | AI Deployer | deploy@neurosense.ai
+0d343a7 | Massive Overhaul: Multimodal CV & Live Weather Architecture | AI Deployer | deploy@neurosense.ai
+3753c09 | Use unpinned requirements with tensorflow-cpu | AI Deployer | deploy@neurosense.ai
+23f7aaf | Rename to streamlit_app.py and track all necessary files | AI Deployer | deploy@neurosense.ai
+683b111 | Include strictly locked requirements.txt | AI Deployer | deploy@neurosense.ai
